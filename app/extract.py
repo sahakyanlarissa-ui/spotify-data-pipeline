@@ -1,10 +1,3 @@
-"""
-extract.py
-----------
-ETL Pipeline - Step 1: EXTRACT
-Կարդում է raw CSV ֆայլը և վերադարձնում DataFrame։
-"""
-
 import pandas as pd
 import os
 
