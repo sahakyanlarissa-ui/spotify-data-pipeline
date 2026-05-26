@@ -1,21 +1,10 @@
--- ============================================================
---  Spotify Tracks — SQL Analysis Queries
---  Database: Microsoft SQL Server
---
---  MySQL/PostgreSQL-ից տարբերությունները.
---  1. LIMIT → TOP կամ FETCH NEXT ... ROWS ONLY
---  2. ROUND(x, 2) → նույնն է
---  3. FILTER (WHERE...) → չկա, SUM(CASE WHEN ... END) ենք օգտ.
---  4. 'key' → track_key (schema-ում այդպես ենք անվանել)
---  5. Window functions → SQL Server 2012+-ում կան
--- ============================================================
+
 
 USE spotify_db;
 GO
 
--- ============================================================
+
 -- 1. SUMMARY STATISTICS
--- ============================================================
 
 -- Քանի երգ, արտիստ, ալբոմ, ժանր
 SELECT
@@ -40,11 +29,9 @@ SELECT
 FROM tracks;
 
 
--- ============================================================
 -- 2. TOP ENTITIES
--- ============================================================
 
--- Top 10 ամենапopular երգ — SQL Server-ում TOP փոխարեն LIMIT-ի
+-- Top 10 ամենапopular երգ 
 SELECT TOP 10
     t.track_name,
     ar.artist_name,
@@ -66,7 +53,7 @@ JOIN tracks t  ON al.album_id  = t.album_id
 GROUP BY ar.artist_name
 ORDER BY track_count DESC;
 
--- Top 10 արտիստ ըստ միջին popularity-ի (min 5 երգ)
+-- Top 10 արտիստ ըստ միջին popularity-ի
 SELECT TOP 10
     ar.artist_name,
     COUNT(t.track_id)                        AS track_count,
@@ -79,9 +66,7 @@ HAVING COUNT(t.track_id) >= 5
 ORDER BY avg_popularity DESC;
 
 
--- ============================================================
 -- 3. GROUPED ANALYSIS — Ժանրի վերլուծություն
--- ============================================================
 
 -- Ժանր → երգերի քանակ, popularity, danceability, energy
 SELECT
@@ -95,7 +80,7 @@ JOIN tracks t ON g.genre_id = t.genre_id
 GROUP BY g.genre_name
 ORDER BY avg_popularity DESC;
 
--- Explicit % ըստ ժանրի — SQL Server-ում SUM(CASE WHEN ...)
+-- Explicit % ըստ ժանրի 
 SELECT TOP 10
     g.genre_name,
     SUM(CASE WHEN t.explicit = 1 THEN 1 ELSE 0 END)  AS explicit_count,
@@ -109,9 +94,8 @@ GROUP BY g.genre_name
 ORDER BY explicit_pct DESC;
 
 
--- ============================================================
+
 -- 4. AUDIO FEATURE ANALYSIS
--- ============================================================
 
 -- Danceability bucket vs Popularity
 SELECT
@@ -143,9 +127,7 @@ GROUP BY g.genre_name
 ORDER BY avg_tempo DESC;
 
 
--- ============================================================
 -- 5. WINDOW FUNCTIONS
--- ============================================================
 
 -- Յուրաքանչյուր ժանրի Top 3 ամենапopular երգ
 SELECT *
@@ -190,11 +172,10 @@ GROUP BY g.genre_name, g.genre_id
 ORDER BY pct_of_total DESC;
 
 
--- ============================================================
 -- 6. ANALYTICAL QUESTION
 --    Ո՞ր ժանրն ունի ամենաբարձր danceability × popularity score,
 --    և ո՞ր արտիստն է ամենաշատ ներկայացված այդ ժանրում։
--- ============================================================
+
 
 WITH genre_scores AS (
     SELECT
