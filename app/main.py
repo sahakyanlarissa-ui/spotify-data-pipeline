@@ -1,15 +1,3 @@
-"""
-main.py
--------
-ETL Pipeline - Գլխավոր ֆայլ (SQL Server տարբերակ)
-
-Օգտագործում (Windows Authentication — ամենապարզը):
-    python main.py
-
-Օգտագործում (SQL Server Authentication):
-    python main.py --trusted false --username sa --password secret
-"""
-
 import argparse
 from extract   import extract
 from transform import transform
